@@ -68,6 +68,10 @@ You can pass second argument - hash of options.
 }
 ```
 
+## TODO
+ - support ruby 1.8 (`encode` missing)
+ - implement missing specs
+
 ## Contributing
 
 1. Fork it
