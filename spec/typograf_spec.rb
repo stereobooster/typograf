@@ -7,6 +7,10 @@ describe Typograf do
     Typograf.process("- Это \"Типограф\"?\n— Нет, это «Типограф»!").should eq "<p>&mdash;&nbsp;Это &laquo;Типограф&raquo;?<br />\n&mdash;&nbsp;Нет, это &laquo;Типограф&raquo;!</p>"
   end
 
+  it ".process support options" do
+    Typograf.process("- Это \"Типограф\"?\n— Нет, это «Типограф»!", :paragraph => {:insert => 0}).should eq "&mdash;&nbsp;Это &laquo;Типограф&raquo;?<br />\n&mdash;&nbsp;Нет, это &laquo;Типограф&raquo;!"
+  end
+
   it "should raise 404 error" do
     lambda {Typograf.process("Тест", :url => 'http://www.typograf.ru/404')}.should raise_error Typograf::NetworkError
   end

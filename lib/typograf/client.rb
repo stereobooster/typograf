@@ -52,28 +52,28 @@ module Typograf
     def form_xml(options)
       o = options
       xml = <<-XML_TEMPLATE
-      <?xml version="1.0" encoding="windows-1251" ?>
-      <preferences>
-        <tags delete="#{o[:tags_delete]}">#{o[:tags]}</tags>
-        <paragraph insert="#{o[:paragraph][:insert]}">
-          <start><![CDATA[#{o[:paragraph][:start]}]]></start>
-          <end><![CDATA[#{o[:paragraph][:end]}]]></end>
-        </paragraph>
-        <newline insert="#{o[:newline][:insert]}"><![CDATA[#{o[:newline][:tag]}]]></newline>
-        <cmsNewLine valid="#{o[:cms_new_line]}" />
-        <dos-text delete="#{o[:dos_text]}" />
-        <nowraped insert="#{o[:nowraped][:insert]}" nonbsp="#{o[:nowraped][:nobsp]}" length="#{o[:nowraped][:length]}">
-          <start><![CDATA[#{o[:nowraped][:start]}]]></start>
-          <end><![CDATA[#{o[:nowraped][:end]}]]></end>
-        </nowraped>
-        <hanging-punct insert="#{o[:hanging_punct]}" />
-        <hanging-line delete="#{o[:hanging_line]}" />
-        <minus-sign><![CDATA[#{o[:minus_sign]}]]></minus-sign>
-        <hyphen insert="#{o[:hyphen][:insert]}" length="#{o[:hyphen][:length]}" />
-        <acronym insert="#{o[:acronym]}"></acronym>
-        <symbols type="#{o[:symbols]}" />
-        <link target="#{o[:link][:target]}" class="#{o[:link][:class]}" />
-      </preferences>
+<?xml version="1.0" encoding="windows-1251" ?>
+<preferences>
+  <tags delete="#{o[:tags_delete]}">#{o[:tags]}</tags>
+  <paragraph insert="#{o[:paragraph][:insert]}">
+    <start><![CDATA[#{o[:paragraph][:start]}]]></start>
+    <end><![CDATA[#{o[:paragraph][:end]}]]></end>
+  </paragraph>
+  <newline insert="#{o[:newline][:insert]}"><![CDATA[#{o[:newline][:tag]}]]></newline>
+  <cmsNewLine valid="#{o[:cms_new_line]}" />
+  <dos-text delete="#{o[:dos_text]}" />
+  <nowraped insert="#{o[:nowraped][:insert]}" nonbsp="#{o[:nowraped][:nobsp]}" length="#{o[:nowraped][:length]}">
+    <start><![CDATA[#{o[:nowraped][:start]}]]></start>
+    <end><![CDATA[#{o[:nowraped][:end]}]]></end>
+  </nowraped>
+  <hanging-punct insert="#{o[:hanging_punct]}" />
+  <hanging-line delete="#{o[:hanging_line]}" />
+  <minus-sign><![CDATA[#{o[:minus_sign]}]]></minus-sign>
+  <hyphen insert="#{o[:hyphen][:insert]}" length="#{o[:hyphen][:length]}" />
+  <acronym insert="#{o[:acronym]}"></acronym>
+  <symbols type="#{o[:symbols]}" />
+  <link target="#{o[:link][:target]}" class="#{o[:link][:class]}" />
+</preferences>
       XML_TEMPLATE
       xml.gsub(/^\s|\s$/, '')
     end
@@ -122,7 +122,7 @@ module Typograf
         raise NetworkError, "#{response.code}: #{response.message}"
       end
 
-      body = response.body.dup.force_encoding("cp1251")
+      body = response.body.force_encoding("cp1251").encode("utf-8")
 
       # error = "\xCE\xF8\xE8\xE1\xEA\xE0: \xE2\xFB \xE7\xE0\xE1\xFB\xEB\xE8 \xEF\xE5\xF0\xE5\xE4\xE0\xF2\xFC \xF2\xE5\xEA\xF1\xF2"
       # error.force_encoding("ASCII-8BIT") if error.respond_to?(:force_encoding)
@@ -130,7 +130,7 @@ module Typograf
         raise NetworkError, "Ошибка: вы забыли передать текст"
       end
 
-      body.encode("utf-8").chomp
+      body.chomp
     end
   end
 end
