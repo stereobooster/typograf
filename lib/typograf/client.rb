@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'net/http'
+require 'htmlentities'
 
 module Typograf
   class NetworkError < StandardError
@@ -50,7 +51,10 @@ module Typograf
     }
 
     def form_xml(options)
-      o = options
+      o = options.dup
+
+      o[:symbols] = 1 if o[:symbols] == 2
+
       xml = <<-XML_TEMPLATE
 <?xml version="1.0" encoding="windows-1251" ?>
 <preferences>
@@ -62,10 +66,18 @@ module Typograf
   <newline insert="#{o[:newline][:insert]}"><![CDATA[#{o[:newline][:tag]}]]></newline>
   <cmsNewLine valid="#{o[:cms_new_line]}" />
   <dos-text delete="#{o[:dos_text]}" />
+      XML_TEMPLATE
+
+      if o[:nowraped][:nonbsp] != 0
+        xml = xml.chomp(" \n") + <<-XML_TEMPLATE
   <nowraped insert="#{o[:nowraped][:insert]}" nonbsp="#{o[:nowraped][:nobsp]}" length="#{o[:nowraped][:length]}">
     <start><![CDATA[#{o[:nowraped][:start]}]]></start>
     <end><![CDATA[#{o[:nowraped][:end]}]]></end>
   </nowraped>
+      XML_TEMPLATE
+      end
+
+      xml = xml.chomp(" \n") + <<-XML_TEMPLATE
   <hanging-punct insert="#{o[:hanging_punct]}" />
   <hanging-line delete="#{o[:hanging_line]}" />
   <minus-sign><![CDATA[#{o[:minus_sign]}]]></minus-sign>
@@ -75,6 +87,7 @@ module Typograf
   <link target="#{o[:link][:target]}" class="#{o[:link][:class]}" />
 </preferences>
       XML_TEMPLATE
+
       xml.gsub(/^\s|\s$/, '')
     end
 
@@ -95,6 +108,7 @@ module Typograf
     def initialize(options = {})
       @url = URI.parse(options.delete(:url) || URL)
       # @chr = options.delete(:chr) || 'UTF-8'
+      @options = options
       @xml = if options.keys.length > 0
         form_xml( deep_merge(DEFAULT_PREFERENCES, options) )
       end
@@ -130,7 +144,11 @@ module Typograf
         raise NetworkError, "Ошибка: вы забыли передать текст"
       end
 
-      body.chomp
+      if @options[:symbols] == 2
+        HTMLEntities.new.decode(body.chomp)
+      else
+        body.chomp
+      end
     end
   end
 end
