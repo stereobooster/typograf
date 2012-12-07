@@ -69,6 +69,7 @@ You can pass second argument - hash of options.
 ```
 
 ## TODO
+ - refactor options (do not use nested options; use symbols instead of "magic" numbers)
  - support ruby 1.8 (`encode` missing)
  - implement missing specs
 
