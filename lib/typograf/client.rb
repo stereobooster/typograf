@@ -120,9 +120,8 @@ module Typograf
         'text' => text.encode("cp1251"),
       }
       params['xml'] = @xml if @xml
-      # params['chr'] = @chr if @chr
-      params = URI.encode_www_form params
-      request = Net::HTTP::Post.new(@url.path + '?' + params)
+      request = Net::HTTP::Post.new(@url.path)
+      request.set_form_data(params)
 
       begin
         response = Net::HTTP.new(@url.host, @url.port).start do |http|
